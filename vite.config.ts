@@ -3,6 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  
-  base: '/miniwins-90/',
+  base: '/',  // Changed from '/miniwins-90/' to '/'
 })
