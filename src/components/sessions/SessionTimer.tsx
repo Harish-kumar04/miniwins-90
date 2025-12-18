@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Square } from 'lucide-react';
 import { Button } from '../shared/Button';
-import { motion } from 'framer-motion';
 
 interface SessionTimerProps {
-  onComplete: (activeTime: number) => void;
+  onComplete: () => void;
   onStop: () => void;
   targetMinutes?: number;
 }
@@ -67,10 +66,12 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
   const handleComplete = () => {
     setIsRunning(false);
     setIsPaused(false);
-    onComplete(seconds);
+    onComplete();
   };
   
   const progressPercentage = Math.min((seconds / (targetMinutes * 60)) * 100, 100);
+  const circumference = 2 * Math.PI * 120;
+  const strokeDashoffset = circumference - (circumference * progressPercentage) / 100;
   
   return (
     <div className="flex flex-col items-center gap-8">
@@ -85,7 +86,7 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
             strokeWidth="8"
             fill="none"
           />
-          <motion.circle
+          <circle
             cx="128"
             cy="128"
             r="120"
@@ -93,33 +94,19 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
             strokeWidth="8"
             fill="none"
             strokeLinecap="round"
-            initial={{ strokeDashoffset: 754 }}
-            animate={{ 
-              strokeDashoffset: 754 - (754 * progressPercentage) / 100,
-            }}
-            style={{
-              strokeDasharray: 754,
-            }}
-            transition={{ duration: 0.5 }}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <motion.div
-            key={seconds}
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            className="text-5xl font-bold text-gray-900 tabular-nums"
-          >
+          <div className="text-5xl font-bold text-gray-900 tabular-nums">
             {formatTime(seconds)}
-          </motion.div>
+          </div>
           {isRunning && !isPaused && (
-            <motion.div
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="mt-2 text-sm text-primary font-medium"
-            >
+            <div className="mt-2 text-sm text-primary font-medium animate-pulse">
               Recording...
-            </motion.div>
+            </div>
           )}
           {isPaused && (
             <div className="mt-2 text-sm text-warning font-medium">

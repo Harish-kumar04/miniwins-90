@@ -18,8 +18,6 @@ interface SessionScreenProps {
 export const SessionScreen: React.FC<SessionScreenProps> = ({
   isOpen,
   onClose,
-  goalId,
-  dailyTaskId,
   goalTitle,
   targetMinutes = 30,
 }) => {
@@ -43,7 +41,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({
     }
   };
   
-  const handleComplete = (activeTime: number) => {
+  const handleComplete = () => {
     setShowRating(true);
   };
   
@@ -153,15 +151,13 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({
               <p className="text-gray-600">How focused were you during this session?</p>
               <div className="flex justify-center gap-3">
                 {[1, 2, 3, 4, 5].map((rating) => (
-                  <motion.button
+                  <button
                     key={rating}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
                     onClick={() => setFocusRating(rating)}
-                    className={`p-2 ${focusRating >= rating ? 'text-warning' : 'text-gray-300'}`}
+                    className={`p-2 transition-transform hover:scale-110 active:scale-95 ${focusRating >= rating ? 'text-warning' : 'text-gray-300'}`}
                   >
                     <Star className="w-10 h-10" fill={focusRating >= rating ? 'currentColor' : 'none'} />
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </div>

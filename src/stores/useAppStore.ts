@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, MasterGoal, DailyTask, Session, Reward, Category, TaskStatus, GoalStatus } from '../types';
+import { User, MasterGoal, DailyTask, Session, Reward, TaskStatus, GoalStatus } from '../types';
 import { generateDailyTasks, calculateDailyScore, calculateStreak } from '../utils/calculations';
 import { startOfDay, isSameDay } from 'date-fns';
 
@@ -12,7 +12,6 @@ interface AppState {
   rewards: Reward[];
   activeSession: Session | null;
   
-  // Actions
   initializeUser: (name: string) => void;
   completeOnboarding: () => void;
   
@@ -30,7 +29,6 @@ interface AppState {
   unlockReward: (goalId: string) => void;
   claimReward: (rewardId: string) => void;
   
-  // Computed
   getTodaysTasks: () => DailyTask[];
   getCurrentStreak: () => number;
   getDailyScore: () => number;

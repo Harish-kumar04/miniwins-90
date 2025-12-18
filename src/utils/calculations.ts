@@ -1,5 +1,5 @@
 import { DailyTask, MasterGoal, Session, TaskStatus } from '../types';
-import { startOfDay, isSameDay, differenceInDays } from 'date-fns';
+import { startOfDay, differenceInDays } from 'date-fns';
 
 export const calculateDailyScore = (tasks: DailyTask[]): number => {
   if (tasks.length === 0) return 0;
@@ -8,7 +8,6 @@ export const calculateDailyScore = (tasks: DailyTask[]): number => {
   tasks.forEach(task => {
     if (task.status === TaskStatus.COMPLETED) totalScore += 100;
     else if (task.status === TaskStatus.PARTIAL) totalScore += 50;
-    // MISSED = 0
   });
   
   return Math.round(totalScore / tasks.length);
@@ -25,21 +24,14 @@ export const calculateGoalProgress = (goal: MasterGoal, tasks: DailyTask[]): num
 };
 
 export const calculateSessionScore = (session: Session, timeTarget: number, currentStreak: number): number => {
-  // Base score: time spent vs target
   const timeScore = Math.min((session.activeTime / 60) / timeTarget, 1) * 100;
-  
-  // Focus bonus: rating × 10
   const focusBonus = (session.focusRating || 0) * 10;
-  
-  // Disturbance penalty: count × 5
   const disturbancePenalty = session.disturbances.length * 5;
-  
-  // Streak multiplier: min(streak × 2, 20)
   const streakMultiplier = Math.min(currentStreak * 2, 20);
   
   const finalScore = Math.max(0, timeScore + focusBonus - disturbancePenalty + streakMultiplier);
   
-  return Math.round(Math.min(finalScore, 150)); // Cap at 150
+  return Math.round(Math.min(finalScore, 150));
 };
 
 export const generateDailyTasks = (goal: MasterGoal): DailyTask[] => {

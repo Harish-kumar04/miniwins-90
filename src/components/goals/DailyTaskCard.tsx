@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Circle, MinusCircle, Play, Target, Clock } from 'lucide-react';
-import { Card } from '../shared/Card';
 import { Button } from '../shared/Button';
 import { TaskStatus, MasterGoal, DailyTask } from '../../types';
 import { useAppStore } from '../../stores/useAppStore';
