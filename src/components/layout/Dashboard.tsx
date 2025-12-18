@@ -1,0 +1,126 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Plus } from 'lucide-react';
+import { Button } from '../shared/Button';
+import { DailyQuote } from '../shared/DailyQuote';
+import { StreakDisplay } from '../shared/StreakDisplay';
+import { Badge } from '../shared/Badge';
+import { DailyTaskCard } from '../goals/DailyTaskCard';
+import { useAppStore } from '../../stores/useAppStore';
+import { Category } from '../../types';
+import { format } from 'date-fns';
+
+interface DashboardProps {
+  onCreateGoal: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ onCreateGoal }) => {
+  const { goals, getTodaysTasks, getCurrentStreak, getDailyScore } = useAppStore();
+  const todaysTasks = getTodaysTasks();
+  const currentStreak = getCurrentStreak();
+  const dailyScore = getDailyScore();
+  
+  const activeGoals = goals.filter(g => g.status === 'active');
+  
+  const getTasksByCategory = (category: Category) => {
+    const categoryGoals = activeGoals.filter(g => g.category === category);
+    return todaysTasks.filter(task => 
+      categoryGoals.some(goal => goal.id === task.goalId)
+    );
+  };
+  
+  const getCategoryGoals = (category: Category) => {
+    return activeGoals.filter(g => g.category === category);
+  };
+  
+  const renderCategorySection = (category: Category, icon: string) => {
+    const categoryGoals = getCategoryGoals(category);
+    const categoryTasks = getTasksByCategory(category);
+    
+    if (categoryGoals.length === 0) return null;
+    
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{icon}</span>
+          <h2 className="text-xl font-bold text-gray-900">{category}</h2>
+          <Badge className="ml-auto">
+            {categoryTasks.length} {categoryTasks.length === 1 ? 'task' : 'tasks'}
+          </Badge>
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {categoryGoals.map(goal => {
+            const task = todaysTasks.find(t => t.goalId === goal.id);
+            if (!task) return null;
+            return <DailyTaskCard key={task.id} goal={goal} task={task} />;
+          })}
+        </div>
+      </div>
+    );
+  };
+  
+  return (
+    <div className="min-h-screen bg-gray-50 pb-12">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary to-accent text-white py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">MiniWins 90</h1>
+              <p className="text-white/80">{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <StreakDisplay streak={currentStreak} />
+              <div className="bg-white/20 rounded-full px-6 py-3 backdrop-blur-sm">
+                <div className="text-sm text-white/80">Today's Score</div>
+                <div className="text-2xl font-bold">{dailyScore}%</div>
+              </div>
+            </div>
+          </div>
+          
+          <Button
+            onClick={onCreateGoal}
+            variant="success"
+            className="bg-white text-primary hover:bg-white/90"
+          >
+            <Plus className="w-5 h-5 mr-2 inline" />
+            Add New Goal
+          </Button>
+        </div>
+      </div>
+      
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        {/* Daily Quote */}
+        <DailyQuote />
+        
+        {/* Empty State */}
+        {activeGoals.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-16"
+          >
+            <div className="text-6xl mb-4">🎯</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Active Goals</h3>
+            <p className="text-gray-600 mb-6">Create your first goal to get started!</p>
+            <Button onClick={onCreateGoal} variant="primary" className="px-8 py-3">
+              <Plus className="w-5 h-5 mr-2 inline" />
+              Create Your First Goal
+            </Button>
+          </motion.div>
+        )}
+        
+        {/* Categories */}
+        {activeGoals.length > 0 && (
+          <div className="space-y-12">
+            {renderCategorySection(Category.PROFESSIONAL, '💼')}
+            {renderCategorySection(Category.PERSONAL, '🎯')}
+            {renderCategorySection(Category.LIFESTYLE, '🌱')}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
