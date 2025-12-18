@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
-import { Button } from '../shared/Button';
 import { DailyQuote } from '../shared/DailyQuote';
 import { StreakDisplay } from '../shared/StreakDisplay';
 import { Badge } from '../shared/Badge';
@@ -22,20 +21,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onCreateGoal }) => {
   
   const activeGoals = goals.filter(g => g.status === 'active');
   
-  const getTasksByCategory = (category: Category) => {
-    const categoryGoals = activeGoals.filter(g => g.category === category);
-    return todaysTasks.filter(task => 
-      categoryGoals.some(goal => goal.id === task.goalId)
-    );
-  };
-  
   const getCategoryGoals = (category: Category) => {
     return activeGoals.filter(g => g.category === category);
   };
   
   const renderCategorySection = (category: Category, icon: string) => {
     const categoryGoals = getCategoryGoals(category);
-    const categoryTasks = getTasksByCategory(category);
     
     if (categoryGoals.length === 0) return null;
     
@@ -45,7 +36,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onCreateGoal }) => {
           <span className="text-2xl">{icon}</span>
           <h2 className="text-xl font-bold text-gray-900">{category}</h2>
           <Badge className="ml-auto">
-            {categoryTasks.length} {categoryTasks.length === 1 ? 'task' : 'tasks'}
+            {categoryGoals.length} {categoryGoals.length === 1 ? 'goal' : 'goals'}
           </Badge>
         </div>
         
@@ -63,9 +54,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onCreateGoal }) => {
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white py-8 px-4">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold mb-2">MiniWins 90</h1>
               <p className="text-white/80">{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
@@ -79,14 +70,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onCreateGoal }) => {
             </div>
           </div>
           
-          <Button
+          <button
             onClick={onCreateGoal}
-            variant="success"
-            className="bg-white text-primary hover:bg-white/90"
+            className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all hover:shadow-xl flex items-center gap-2"
           >
-            <Plus className="w-5 h-5 mr-2 inline" />
+            <Plus className="w-5 h-5" />
             Add New Goal
-          </Button>
+          </button>
         </div>
       </div>
       
@@ -100,15 +90,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onCreateGoal }) => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
+            className="text-center py-16 bg-white rounded-2xl shadow-sm"
           >
             <div className="text-6xl mb-4">🎯</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No Active Goals</h3>
-            <p className="text-gray-600 mb-6">Create your first goal to get started!</p>
-            <Button onClick={onCreateGoal} variant="primary" className="px-8 py-3">
-              <Plus className="w-5 h-5 mr-2 inline" />
+            <p className="text-gray-600 mb-6">Create your first goal to get started on your 30/60/90 day journey!</p>
+            <button
+              onClick={onCreateGoal}
+              className="bg-indigo-600 text-white hover:bg-indigo-700 px-8 py-3 rounded-lg font-semibold inline-flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
+            >
+              <Plus className="w-5 h-5" />
               Create Your First Goal
-            </Button>
+            </button>
           </motion.div>
         )}
         
